@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سينما ويب 3 | استكمال المشاهدة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #6a5af9;
+            --secondary: #4a9eff;
+            --accent: #ff416c;
+            --dark: #0c1220;
+            --darker: #060a14;
+            --light: #f0f4ff;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .logo {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 25px rgba(106, 90, 249, 0.5);
+        }
+        
+        .logo i {
+            font-size: 3.5rem;
+            color: white;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(74, 158, 255, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+            color: #aab8e0;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 5px;
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .tab.active {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            box-shadow: 0 5px 15px rgba(106, 90, 249, 0.4);
+            color: white;
+        }
+        
+        .panel {
+            display: none;
+        }
+        
+        .panel.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .content-container {
+            background: rgba(10, 15, 40, 0.85);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            min-height: 500px;
+            position: relative;
+        }
+        
+        #browser-frame {
+            width: 100%;
+            height: 600px;
+            border: none;
+            background: white;
+        }
+        
+        .browser-controls {
+            display: flex;
+            gap: 10px;
+            padding: 15px;
+            background: rgba(5, 10, 30, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .browser-btn {
+            padding: 8px 15px;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .browser-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .browser-url {
+            flex: 1;
+            padding: 8px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+        
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(106, 90, 249, 0.5);
+        }
+        
+        .user-avatar i {
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .user-menu {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            background: rgba(10, 15, 40, 0.95);
+            border-radius: 10px;
+            padding: 15px;
+            width: 250px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .user-info {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 10px;
+        }
+        
+        .user-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .user-email {
+            font-size: 0.9rem;
+            color: #aab8e0;
+        }
+        
+        .menu-item {
+            padding: 12px 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 5px;
+        }
+        
+        .menu-item:hover {
+            background: rgba(74, 158, 255, 0.2);
+        }
+        
+        .login-form {
+            background: rgba(10, 15, 40, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            margin: 50px auto;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .form-title {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--secondary);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+        
+        .form-button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .form-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(106, 90, 249, 0.4);
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #aab8e0;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--secondary);
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            padding: 10px 20px;
+            border-radius: 50px;
+            background: rgba(74, 158, 255, 0.1);
+        }
+        
+        .social-link:hover {
+            background: rgba(74, 158, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(74, 158, 255, 0.3);
+        }
+        
+        .social-link i {
+            font-size: 1.4rem;
+        }
+        
+        .instagram-link {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            color: white;
+        }
+        
+        .instagram-link:hover {
+            background: linear-gradient(45deg, #ff9d3e, #ff7a5c, #ff3860, #ff2a70, #ff1d9a);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            #browser-frame {
+                height: 400px;
+            }
+            
+            .user-section {
+                top: 10px;
+                left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-film"></i>
+            </div>
+            <h1>سينما ويب 3</h1>
+            <p class="subtitle">استمتع بأفضل الأفلام والمسلسلات مع خاصية استكمال المشاهدة على جميع أجهزتك</p>
+        </header>
+        
+        <div class="user-section">
+            <div class="user-avatar" id="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-menu" id="user-menu">
+                <div class="user-info">
+                    <div class="user-name" id="user-name">زائر</div>
+                    <div class="user-email" id="user-email">لم تقم بتسجيل الدخول</div>
+                </div>
+                <div class="menu-item" id="login-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>تسجيل الدخول / إنشاء حساب</span>
+                </div>
+                <div class="menu-item" id="profile-btn" style="display: none;">
+                    <i class="fas fa-user-cog"></i>
+                    <span>الملف الشخصي</span>
+                </div>
+                <div class="menu-item" id="history-btn" style="display: none;">
+                    <i class="fas fa-history"></i>
+                    <span>سجل المشاهدة</span>
+                </div>
+                <div class="menu-item" id="logout-btn" style="display: none;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>تسجيل الخروج</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="browser">متصفح السينما</div>
+            <div class="tab" data-tab="login" id="login-tab" style="display: none;">حسابي</div>
+        </div>
+        
+        <div class="panel active" id="browser-panel">
+            <div class="content-container">
+                <div class="browser-controls">
+                    <button class="browser-btn" id="back-btn"><i class="fas fa-arrow-left"></i></button>
+                    <button class="browser-btn" id="forward-btn"><i class="fas fa-arrow-right"></i></button>
+                    <button class="browser-btn" id="refresh-btn"><i class="fas fa-sync-alt"></i></button>
+                    <div class="browser-url" id="current-url">https://web3.topcinema.fun/</div>
+                </div>
+                <iframe id="browser-frame" src="https://web3.topcinema.fun/"></iframe>
+            </div>
+        </div>
+        
+        <div class="panel" id="login-panel">
+            <div class="login-form">
+                <h2 class="form-title">تسجيل الدخول إلى حسابك</h2>
+                
+                <div class="form-group">
+                    <label class="form-label">البريد الإلكتروني</label>
+                    <input type="email" class="form-input" id="login-email" placeholder="example@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">كلمة المرور</label>
+                    <input type="password" class="form-input" id="login-password" placeholder="••••••••">
+                </div>
+                
+                <button class="form-button" id="login-action">تسجيل الدخول</button>
+                
+                <div class="form-footer">
+                    ليس لديك حساب؟ <a href="#" id="show-register">سجل الآن</a>
+                </div>
+            </div>
+            
+            <div class="login-form" id="register-form" style="display: none;">
+                <h2 class="form-title">إنشاء حساب جديد</h2>
+                
+                <div class="form-group">
+                    <label class="form-label">الاسم الكامل</label>
+                    <input type="text" class="form-input" id="register-name" placeholder="أحمد محمد">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">البريد الإلكتروني</label>
+                    <input type="email" class="form-input" id="register-email" placeholder="example@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">كلمة المرور</label>
+                    <input type="password" class="form-input" id="register-password" placeholder="••••••••">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">تأكيد كلمة المرور</label>
+                    <input type="password" class="form-input" id="register-confirm" placeholder="••••••••">
+                </div>
+                
+                <button class="form-button" id="register-action">إنشاء حساب</button>
+                
+                <div class="form-footer">
+                    لديك حساب بالفعل؟ <a href="#" id="show-login">تسجيل الدخول</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="social-links">
+            <a href="https://instagram.com/_gq62" class="social-link instagram-link" target="_blank">
+                <i class="fab fa-instagram"></i>
+                تابعنا على الإنستقرام @_gq62
+            </a>
+            <a href="#" class="social-link">
+                <i class="fab fa-telegram"></i>
+                انضم إلى قناتنا على التليجرام
+            </a>
+        </div>
+        
+        <footer>
+            <p>سينما ويب 3 &copy; 2023 - جميع الحقوق محفوظة</p>
+            <p>استماع بأفضل تجربة مشاهدة مع خاصية استكمال المشاهدة على جميع أجهزتك</p>
+        </footer>
+    </div>
+    
+    <script>
+        // عناصر DOM
+        const userAvatar = document.getElementById('user-avatar');
+        const userMenu = document.getElementById('user-menu');
+        const userName = document.getElementById('user-name');
+        const userEmail = document.getElementById('user-email');
+        const loginBtn = document.getElementById('login-btn');
+        const profileBtn = document.getElementById('profile-btn');
+        const historyBtn = document.getElementById('history-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const loginPanel = document.getElementById('login-panel');
+        const loginTab = document.getElementById('login-tab');
+        const browserFrame = document.getElementById('browser-frame');
+        const currentUrlEl = document.getElementById('current-url');
+        const backBtn = document.getElementById('back-btn');
+        const forwardBtn = document.getElementById('forward-btn');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const loginEmail = document.getElementById('login-email');
+        const loginPassword = document.getElementById('login-password');
+        const loginAction = document.getElementById('login-action');
+        const showRegister = document.getElementById('show-register');
+        const registerForm = document.getElementById('register-form');
+        const registerName = document.getElementById('register-name');
+        const registerEmail = document.getElementById('register-email');
+        const registerPassword = document.getElementById('register-password');
+        const registerConfirm = document.getElementById('register-confirm');
+        const registerAction = document.getElementById('register-action');
+        const showLogin = document.getElementById('show-login');
+        const tabs = document.querySelectorAll('.tab');
+        const panels = document.querySelectorAll('.panel');
+        
+        // حالة المستخدم
+        let currentUser = JSON.parse(localStorage.getItem('cinemaUser')) || null;
+        
+        // تهيئة التبويبات
+        function initTabs() {
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    panels.forEach(p => p.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(`${tab.dataset.tab}-panel`).classList.add('active');
+                });
+            });
+        }
+        
+        // تحديث واجهة المستخدم حسب حالة الدخول
+        function updateUserInterface() {
+            if (currentUser) {
+                userName.textContent = currentUser.name;
+                userEmail.textContent = currentUser.email;
+                loginBtn.style.display = 'none';
+                profileBtn.style.display = 'flex';
+                historyBtn.style.display = 'flex';
+                logoutBtn.style.display = 'flex';
+                loginTab.style.display = 'none';
+            } else {
+                userName.textContent = 'زائر';
+                userEmail.textContent = 'لم تقم بتسجيل الدخول';
+                loginBtn.style.display = 'flex';
+                profileBtn.style.display = 'none';
+                historyBtn.style.display = 'none';
+                logoutBtn.style.display = 'none';
+                loginTab.style.display = 'flex';
+            }
+        }
+        
+        // تسجيل الدخول
+        function loginUser(email, password) {
+            // في التطبيق الحقيقي، سيتم الاتصال بالخادم للتحقق
+            const users = JSON.parse(localStorage.getItem('cinemaUsers')) || [];
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                currentUser = {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    joinDate: new Date().toISOString()
+                };
+                
+                localStorage.setItem('cinemaUser', JSON.stringify(currentUser));
+                updateUserInterface();
+                hideLoginPanel();
+                alert(`مرحباً بعودتك، ${user.name}!`);
+                return true;
+            }
+            
+            alert('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+            return false;
+        }
+        
+        // تسجيل الخروج
+        function logoutUser() {
+            currentUser = null;
+            localStorage.removeItem('cinemaUser');
+            updateUserInterface();
+            userMenu.style.display = 'none';
+            alert('تم تسجيل الخروج بنجاح');
+        }
+        
+        // إنشاء حساب جديد
+        function registerUser(name, email, password) {
+            // في التطبيق الحقيقي، سيتم إرسال البيانات للخادم
+            const users = JSON.parse(localStorage.getItem('cinemaUsers')) || [];
+            
+            // التحقق من عدم وجود حساب بنفس البريد
+            if (users.some(u => u.email === email)) {
+                alert('هذا البريد الإلكتروني مستخدم بالفعل');
+                return false;
+            }
+            
+            // إنشاء حساب جديد
+            const newUser = {
+                id: Date.now().toString(),
+                name: name,
+                email: email,
+                password: password,
+                joinDate: new Date().toISOString()
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('cinemaUsers', JSON.stringify(users));
+            
+            // تسجيل الدخول تلقائياً
+            currentUser = {
+                id: newUser.id,
+                name: newUser.name,
+                email: newUser.email,
+                joinDate: newUser.joinDate
+            };
+            
+            localStorage.setItem('cinemaUser', JSON.stringify(currentUser));
+            updateUserInterface();
+            hideLoginPanel();
+            alert(`مرحباً ${name}! تم إنشاء حسابك بنجاح.`);
+            return true;
+        }
+        
+        // إخفاء لوحة تسجيل الدخول
+        function hideLoginPanel() {
+            loginPanel.classList.remove('active');
+            document.querySelector('.tab.active').click();
+        }
+        
+        // أحداث واجهة المستخدم
+        userAvatar.addEventListener('click', () => {
+            userMenu.style.display = userMenu.style.display === 'block' ? 'none' : 'block';
+        });
+        
+        loginBtn.addEventListener('click', () => {
+            loginTab.click();
+            userMenu.style.display = 'none';
+        });
+        
+        logoutBtn.addEventListener('click', () => {
+            logoutUser();
+            userMenu.style.display = 'none';
+        });
+        
+        loginAction.addEventListener('click', () => {
+            const email = loginEmail.value.trim();
+            const password = loginPassword.value.trim();
+            
+            if (!email || !password) {
+                alert('الرجاء ملء جميع الحقول');
+                return;
+            }
+            
+            loginUser(email, password);
+        });
+        
+        registerAction.addEventListener('click', () => {
+            const name = registerName.value.trim();
+            const email = registerEmail.value.trim();
+            const password = registerPassword.value.trim();
+            const confirm = registerConfirm.value.trim();
+            
+            if (!name || !email || !password || !confirm) {
+                alert('الرجاء ملء جميع الحقول');
+                return;
+            }
+            
+            if (password !== confirm) {
+                alert('كلمتا المرور غير متطابقتين');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+                return;
+            }
+            
+            registerUser(name, email, password);
+        });
+        
+        showRegister.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerForm.style.display = 'block';
+            showRegister.parentElement.parentElement.style.display = 'none';
+        });
+        
+        showLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerForm.style.display = 'none';
+            showRegister.parentElement.parentElement.style.display = 'block';
+        });
+        
+        // أحداث المتصفح
+        backBtn.addEventListener('click', () => {
+            browserFrame.contentWindow.history.back();
+        });
+        
+        forwardBtn.addEventListener('click', () => {
+            browserFrame.contentWindow.history.forward();
+        });
+        
+        refreshBtn.addEventListener('click', () => {
+            browserFrame.contentWindow.location.reload();
+        });
+        
+        // تحديث رابط المتصفح الحالي
+        browserFrame.addEventListener('load', () => {
+            const currentUrl = browserFrame.contentWindow.location.href;
+            currentUrlEl.textContent = currentUrl;
+        });
+        
+        // تهيئة الصفحة
+        function init() {
+            initTabs();
+            updateUserInterface();
+            
+            // تحميل الموقع المطلوب
+            browserFrame.src = 'https://web3.topcinema.fun/';
+        }
+        
+        // بدء التطبيق
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
